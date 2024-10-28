@@ -71,25 +71,24 @@ Example response:
   "chainId": "0x1",
   "presenceOfAttack": true,
   "attacks": [
-    {
-      "attackId": 1,
-      "txHash": "0xc310a0affe2169d1...",
-      "attackTime": "2023-03-13T00:00:00.000Z",
+        {
+      "attackId": 4,
+      "txHash": "0x3819f9616fefe9471cfb5d7284b5a5b48b215dc5e970eea7697bb039ec47d1b6",
+      "attackTime": "2023-03-13T09:03:23.000Z",
       "isFlashLoan": true,
-      "attackerAddress": "0xb66cd966670...",
-      "victimAddress": "0xe025e3ca2...",
-      "amountLostInDollars": 1231273.123,
+      "attackerAddress": "0x1b6bAfA6FA51500A35c030Baa82479Cdad4F316c",
+      "victimAddress": "0xDef1C0ded9bec7F1a1670819833240f027b25EfF",
+      "amountLostInDollars": 0,
       "severity": "critical",
-      "attackerLabel": "Attacker EOA-1",
-      "eulerAttackLabel": "Euler Attack Tx-1",
       "flags": {
-        "transactionHash": "0xc310a0affe2169d1...",
-        "fromKnownAttacker": "Attacker EOA-1",
-        "toKnownAttacker": "Victim Contract",
-        "isLargeTransaction": true,
-        "isEulerAttack": "Yes"
+        "isFlashLoan": true,
+        "matchedProvider": "Balancer Vault",
+        "fromKnownAttacker": "No",
+        "toKnownAttacker": "No",
+        "isLargeTransaction": false,
+        "eulerAttack": "No"
       }
-    }
+    }, //.....
   ],
   "ethPrice": 2000 //calculated from coingecko
 }
@@ -98,11 +97,15 @@ Example response:
 ## Next Steps & Potential Improvements
 
 1. **Flash Loan Provider Detection**:
-   - Create `checkForFlashLoan` to interact with specific lending pools or flash loan providers (e.g., Aave, dYdX) for known lenders, or simply to improve what a real flash loan is.
+   1) DONE - Create `checkForFlashLoan` to interact with specific lending pools or flash loan providers (e.g., Aave, dYdX) for known lenders, or simply to improve what a real flash loan is.
+   2) Can still ensure the loan was given and received
+   3) This should be done live stream via websocket where what we are looking for is a flashloan provider with a suspicious amount as primary FLAG WARNING, then known accounts as secondary. As well as known accounts for any transaciton.
+   4) Flashloan providers should be monitored directly and cached for faster reaction
 2. **Historical Attack Patterns**:
    - Load patterns from known historical attacks to match against future suspicious transactions.
 3. **Machine Learning Integration**:
    - Use ML models to learn and detect new patterns of suspicious activity automatically. PyTorch TensorFlow
+4. checking signature on each tranasction in the block significantly slows down the process by having to make a call for every transaction (there are bulk solutions, as well as further research may show the signature is overkill)
 
 ## Tech Stack
 
