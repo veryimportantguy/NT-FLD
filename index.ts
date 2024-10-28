@@ -1,4 +1,4 @@
-import express, { Request, Response, RequestHandler } from 'express';
+import express, { Request, Response } from 'express';
 import { detectFlashLoanAttack } from './api/FLD'; // Adjust path as needed
 import * as dotenv from 'dotenv';
 dotenv.config();
@@ -6,8 +6,8 @@ dotenv.config();
 const app = express();
 app.use(express.json()); // Middleware to parse JSON request bodies
 
-// Define the request handler with specific types for req and res
-const detectAttackHandler: RequestHandler = (req: Request, res: Response): void => {
+// Define the request handler as an async function with typed parameters
+const detectAttackHandler = async (req: Request, res: Response): Promise<void> => {
     const { blockNumber } = req.body;
 
     if (!blockNumber) {
@@ -15,14 +15,13 @@ const detectAttackHandler: RequestHandler = (req: Request, res: Response): void 
         return;
     }
 
-    detectFlashLoanAttack(blockNumber)
-        .then((result: any) => {
-            res.json(result);  // Simply call res.json without returning
-        })
-        .catch((error: any) => {
-            console.error("Error detecting flash loan attack:", error);
-            res.status(500).json({ error: "An error occurred while detecting the attack" });
-        });
+    try {
+        const result = await detectFlashLoanAttack(blockNumber);
+        res.json(result);
+    } catch (error) {
+        console.error("Error detecting flash loan attack:", error);
+        res.status(500).json({ error: "An error occurred while detecting the attack" });
+    }
 };
 
 // POST /detectFlashLoanAttack

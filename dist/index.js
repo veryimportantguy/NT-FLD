@@ -22,6 +22,15 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -32,22 +41,22 @@ const dotenv = __importStar(require("dotenv"));
 dotenv.config();
 const app = (0, express_1.default)();
 app.use(express_1.default.json()); // Middleware to parse JSON request bodies
-// Define the request handler with specific types for req and res
-const detectAttackHandler = (req, res) => {
+// Define the request handler as an async function with typed parameters
+const detectAttackHandler = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { blockNumber } = req.body;
     if (!blockNumber) {
         res.status(400).json({ error: "Missing blockNumber in request body" });
         return;
     }
-    (0, FLD_1.detectFlashLoanAttack)(blockNumber)
-        .then((result) => {
-        res.json(result); // Simply call res.json without returning
-    })
-        .catch((error) => {
+    try {
+        const result = yield (0, FLD_1.detectFlashLoanAttack)(blockNumber);
+        res.json(result);
+    }
+    catch (error) {
         console.error("Error detecting flash loan attack:", error);
         res.status(500).json({ error: "An error occurred while detecting the attack" });
-    });
-};
+    }
+});
 // POST /detectFlashLoanAttack
 app.post('/detectFlashLoanAttack', detectAttackHandler);
 // Start the server on the specified port or 3000 by default
